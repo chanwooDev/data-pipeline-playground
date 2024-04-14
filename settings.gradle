@@ -1,2 +1,3 @@
 rootProject.name = 'data-pipeline-playground'
+include 'flink-playground'
 
