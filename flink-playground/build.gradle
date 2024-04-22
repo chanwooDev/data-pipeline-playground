@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 group = 'com.chandev'
@@ -9,39 +10,60 @@ repositories {
     mavenCentral()
 }
 
+ext{
+    flinkVersion = '1.17.2'
+}
+
+configurations {
+    provided
+    implementation.extendsFrom provided
+}
+
+configurations {
+    assembly
+    implementation.extendsFrom assembly
+}
+
 dependencies {
 
     //flink flink-streaming-java
-    implementation "org.apache.flink:flink-streaming-java:${flinkVersion}"
+    provided "org.apache.flink:flink-streaming-java:${flinkVersion}"
     //flink-walkthrough-common
-    implementation "org.apache.flink:flink-walkthrough-common:${flinkVersion}"
+    provided "org.apache.flink:flink-walkthrough-common:${flinkVersion}"
     //flink core
-    implementation "org.apache.flink:flink-core:${flinkVersion}"
+    provided "org.apache.flink:flink-core:${flinkVersion}"
     //flink-clients
-    implementation "org.apache.flink:flink-clients:${flinkVersion}"
+    provided "org.apache.flink:flink-clients:${flinkVersion}"
     //flink-runtime-web
-    implementation "org.apache.flink:flink-runtime-web:${flinkVersion}"
+    provided "org.apache.flink:flink-runtime-web:${flinkVersion}"
 
     //flink-table-api-java
-    implementation "org.apache.flink:flink-table-api-java:${flinkVersion}"
+    provided "org.apache.flink:flink-table-api-java:${flinkVersion}"
     //flink-table-api-java-bridge
-    implementation "org.apache.flink:flink-table-api-java-bridge:${flinkVersion}"
+    provided "org.apache.flink:flink-table-api-java-bridge:${flinkVersion}"
     //flink-table-planner-loader
-    implementation "org.apache.flink:flink-table-planner-loader:${flinkVersion}"
+    provided "org.apache.flink:flink-table-planner-loader:${flinkVersion}"
     //flink-table-runtime
-    implementation "org.apache.flink:flink-table-runtime:${flinkVersion}"
+    provided "org.apache.flink:flink-table-runtime:${flinkVersion}"
 
     // slf4j-api<
-    implementation 'org.slf4j:slf4j-api:1.7.30'
+    assembly 'org.slf4j:slf4j-api:1.7.30'
 
     //logback-classic
-    implementation 'ch.qos.logback:logback-classic:1.4.14'
-
+    assembly 'ch.qos.logback:logback-classic:1.2.11'
 
     //hamcrest-all
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+shadowJar {
+    zip64 true
+    configurations = [project.configurations.assembly]
+    dependencies {}
+
+    relocate 'com.google', 's.com.google'
 }
 
 test {
